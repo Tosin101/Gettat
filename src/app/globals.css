@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg: #FBFBFB;
+  --color-ink: #2E2B3B;
+  --color-ink-muted: #6B6878;
+  --color-accent-soft: #E8F9FF;
+  --color-accent-mid: #C4D9FF;
+  --color-accent-primary: #C5BAFF;
+
+  --font-display: 'Quicksand', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 8px 30px rgba(197, 186, 255, 0.25);
+  --shadow-glow: 0 0 24px rgba(197, 186, 255, 0.55);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-bg text-ink font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-semibold;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill px-8 py-3 font-display font-semibold transition-all duration-200 bg-accent-primary text-white shadow-glow hover:shadow-[0_0_32px_rgba(197,186,255,0.75)] hover:-translate-y-0.5;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill px-8 py-3 font-display font-semibold transition-all duration-200 bg-transparent border border-accent-mid text-ink hover:bg-accent-soft;
+  }
+  .card-glass {
+    @apply bg-white/55 border border-white/60 rounded-lg backdrop-blur-md shadow-soft p-6;
+  }
+  .input-field {
+    @apply w-full rounded-md border border-accent-mid bg-white px-4 py-3 text-ink focus:border-accent-primary focus:outline-none;
+  }
 }

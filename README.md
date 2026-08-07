@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gehtta Frontend — Next.js + Tailwind
 
-## Getting Started
-
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx create-next-app@latest gehtta-frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+cd gehtta-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then copy the files from this folder in on top (same relative paths):
+- `tailwind.config.ts` → overwrite
+- `.env.example` → add
+- `src/app/globals.css` → overwrite
+- `src/app/layout.tsx` → overwrite
+- `src/app/style-guide/page.tsx` → add
+- `src/components/**` → add
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
+Visit `/style-guide` to see the design system rendered.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Git
 
-## Learn More
+`create-next-app` already runs `git init` + an initial commit. From here:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+git add .
+git commit -m "chore: apply Gehtta design tokens and base components"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# then, after creating an empty repo on GitHub:
+git remote add origin https://github.com/<you>/gehtta.git
+git branch -M main
+git push -u origin main
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Suggested habit for the screen-conversion phase: **one commit per screen** (or
+per small group of related screens), not one giant commit at the end — makes
+it much easier to review or revert a single screen later.
 
-## Deploy on Vercel
+## Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/
+│   ├── layout.tsx        # fonts + global wrapper
+│   ├── globals.css       # Tailwind layers + .btn/.card-glass/.input-field
+│   └── style-guide/      # reference page — check every screen against this
+├── components/
+│   ├── ui/                # Button, Card, Input — generic, reused everywhere
+│   └── layout/             # Nav — page chrome
+tailwind.config.ts          # Gehtta palette, radius, shadow, font tokens
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Screen naming convention
+
+As you convert designs, map each new route to the PRD's Screen Inventory
+(§10), e.g. `app/(auth)/signup/page.tsx`, `app/onboarding/values-quiz/page.tsx`,
+`app/events/[id]/page.tsx`. Group related screens into route folders (auth,
+onboarding, events, dates, admin) rather than one flat list — Next.js routing
+makes this natural, unlike the flat-file vanilla approach.
+
+## Rules of thumb
+
+1. **Never hardcode a hex color** — use the Tailwind tokens (`bg-accent-primary`,
+   `text-ink`, etc.) so a palette change only touches `tailwind.config.ts`.
+2. **New repeated UI element → a component in `components/ui`**, not inline
+   JSX copied across pages.
+3. **Check both the mobile and desktop breakpoints** on every screen — this
+   is a responsive web app per the PRD, not mobile-only.
