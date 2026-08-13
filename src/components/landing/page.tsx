@@ -6,7 +6,6 @@ import EventsSection from '@/components/landing/EventsSection'
 import PrivacyCTA from '@/components/landing/PrivacyCTA'
 import Footer from '@/components/landing/Footer'
 
-
 export default function HomePage() {
   return (
     <>

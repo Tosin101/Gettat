@@ -1,10 +1,10 @@
-# Gehtta Frontend — Next.js + Tailwind
+# Gettat Frontend — Next.js + Tailwind
 
 ## Setup
 
 ```bash
-npx create-next-app@latest gehtta-frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-cd gehtta-frontend
+npx create-next-app@latest gettat-frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+cd gettat-frontend
 ```
 
 Then copy the files from this folder in on top (same relative paths):
@@ -27,10 +27,10 @@ Visit `/style-guide` to see the design system rendered.
 
 ```bash
 git add .
-git commit -m "chore: apply Gehtta design tokens and base components"
+git commit -m "chore: apply Gettat design tokens and base components"
 
 # then, after creating an empty repo on GitHub:
-git remote add origin https://github.com/<you>/gehtta.git
+git remote add origin https://github.com/<you>/gettat.git
 git branch -M main
 git push -u origin main
 ```
@@ -50,7 +50,7 @@ src/
 ├── components/
 │   ├── ui/                # Button, Card, Input — generic, reused everywhere
 │   └── layout/             # Nav — page chrome
-tailwind.config.ts          # Gehtta palette, radius, shadow, font tokens
+tailwind.config.ts          # Gettat palette, radius, shadow, font tokens
 ```
 
 ## Screen naming convention
