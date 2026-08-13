@@ -1,14 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import Sidebar from '@/components/home/Sidebar'
 import EventCard from '@/components/events/EventCard'
 import { eventListings } from '@/data/events'
 
+type GoldenTicketStatus = 'pending' | 'accepted' | 'declined'
+
 export default function EventsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [goldenTicketStatus, setGoldenTicketStatus] =
+    useState<GoldenTicketStatus>('pending')
+
+  // localStorage only exists in the browser, so this has to run after
+  // mount rather than during the initial render
+  useEffect(() => {
+    const stored = localStorage.getItem('golden-ticket-status')
+    if (stored === 'accepted' || stored === 'declined') {
+      setGoldenTicketStatus(stored)
+    }
+  }, [])
+
+  // Real event data would say whether the event has actually started —
+  // hardcoded false here since this card's data is still an example
+  const eventHasStarted = false
 
   return (
     <>
@@ -22,7 +39,6 @@ export default function EventsPage() {
         >
           <Menu size={22} className="text-ink" />
         </button>
-        {/* "Lagos" is hardcoded until real location data exists */}
         <h1 className="text-lg font-bold text-ink">Events · Lagos</h1>
       </div>
 
@@ -36,7 +52,6 @@ export default function EventsPage() {
                 members, unless you go fully private.
               </p>
             </div>
-            {/* Hosted-event creation screen isn't built yet */}
             <Link
               href="/events/host"
               className="shrink-0 rounded-pill bg-accent-primary px-5 py-2.5 text-sm font-semibold text-white shadow-glow"
@@ -56,18 +71,28 @@ export default function EventsPage() {
             <EventCard key={event.id} {...event} />
           ))}
 
-          {/* Golden Ticket — a user-hosted event with 2 seats (1 male,
-              1 female) reserved for Gehtta to fill with an eligible
-              stranger. Structurally different from the 3 above, so it
-              skips the seats-left format entirely. */}
-          <EventCard
-            id="golden-ticket"
-            name="Golden Ticket"
-            subtitle="Gehtta invites you ❤️"
-            detail="Tue 5:00 PM · limited time to accept"
-            actionLabel="View"
-            badgeColor="primary"
-          />
+          {goldenTicketStatus !== 'declined' && (
+            <EventCard
+              id={
+                goldenTicketStatus === 'accepted'
+                  ? eventHasStarted
+                    ? 'waiting-room' // would be a live "meeting in progress" route once built
+                    : 'waiting-room'
+                  : 'golden-ticket'
+              }
+              name="Golden Ticket"
+              subtitle="Gehtta invites you ❤️"
+              detail="Tue 5:00 PM · limited time to accept"
+              actionLabel={
+                goldenTicketStatus === 'accepted'
+                  ? eventHasStarted
+                    ? 'Start'
+                    : 'Join'
+                  : 'View'
+              }
+              badgeColor="primary"
+            />
+          )}
         </div>
 
         <p className="mt-6 text-center text-xs text-ink-muted">

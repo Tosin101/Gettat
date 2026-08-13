@@ -94,8 +94,6 @@
     animation: icon-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
   }
 
-  /* 404 page — slow float + soft glow behind the mask icon, so it feels
-     alive without being distracting */
   @keyframes float-icon {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
@@ -112,12 +110,21 @@
     animation: glow-pulse 3s ease-in-out infinite;
   }
 
-  /* Small fade+rise used each time the rotating message text changes */
   @keyframes text-fade-in {
     0% { opacity: 0; transform: translateY(4px); }
     100% { opacity: 1; transform: translateY(0); }
   }
   .animate-text-fade-in {
     animation: text-fade-in 0.4s ease-out;
+  }
+
+  /* Slow opacity fade loop for the mask icon on the eligibility-check
+     loading screen */
+  @keyframes fade-loop {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .animate-fade-loop {
+    animation: fade-loop 1.5s ease-in-out infinite;
   }
 }
