@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react'
 
 const WORDS_PER_CHUNK = 10
 
-export default function CyclingCaption({ text }: { text: string }) {
+export default function CyclingCaption({
+  text,
+  paused = false,
+}: {
+  text: string
+  paused?: boolean
+}) {
   const words = text.split(' ')
   const chunks: string[] = []
   for (let i = 0; i < words.length; i += WORDS_PER_CHUNK) {
@@ -14,13 +20,13 @@ export default function CyclingCaption({ text }: { text: string }) {
   const [chunkIndex, setChunkIndex] = useState(0)
 
   useEffect(() => {
-    if (chunks.length <= 1) return
+    if (paused || chunks.length <= 1) return
     const interval = setInterval(() => {
       setChunkIndex((i) => (i + 1) % chunks.length)
     }, 3000)
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chunks.length])
+  }, [chunks.length, paused])
 
   return (
     <p

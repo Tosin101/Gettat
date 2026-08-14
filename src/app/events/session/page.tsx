@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import Sidebar from '@/components/home/Sidebar'
@@ -9,12 +10,13 @@ import TraitPicker from '@/components/onboarding/TraitPicker'
 
 const RATING_TRAITS = ['Warm', 'Funny', 'Thoughtful', 'Confident']
 
-// Example transcript, long enough to actually show the caption cycling
 const EXAMPLE_CAPTION =
   "Hi, I'm someone who laughs easily and listens closely. I grew up between two cities, and I think that's why I love a conversation that goes somewhere unexpected. On weekends you'll probably find me trying a new recipe or getting lost in a bookstore. I'm looking for someone who's curious about the world and doesn't take themselves too seriously."
 
-// No real session/guest data yet — a small mock list stands in
-const SESSION_SIZE = 3
+// Real secret names instead of "Guest 1/2/3" — same names used in the
+// hosted-event guest list, for consistency across the mock data
+const FEMALE_GUESTS = ['Ada', 'Zainab', 'Amara']
+const MALE_GUESTS = ['Tomi', 'Kelechi', 'Chidi']
 
 const wavebarHeights = [
   40, 65, 30, 80, 50, 90, 45, 70, 35, 85, 55, 95, 40, 75, 30, 80, 50, 90, 45,
@@ -23,12 +25,9 @@ const wavebarHeights = [
 
 export default function MeetingSessionPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  // TEMPORARY — stands in for the real signed-in user's gender until
-  // auth exists. Determines who you're rating: each gender rates every
-  // guest of the opposite gender.
   const [viewingAs, setViewingAs] = useState<'male' | 'female'>('female')
   const guestGender = viewingAs === 'male' ? 'female' : 'male'
+  const guestNames = guestGender === 'female' ? FEMALE_GUESTS : MALE_GUESTS
 
   const [guestIndex, setGuestIndex] = useState(0)
   const [elapsed, setElapsed] = useState(0)
@@ -36,20 +35,23 @@ export default function MeetingSessionPage() {
   const [selectedTraits, setSelectedTraits] = useState<string[]>([])
   const [complete, setComplete] = useState(false)
 
+  const currentName = guestNames[guestIndex]
+  const introFinished = elapsed >= 60
+
   useEffect(() => {
     setElapsed(0)
   }, [guestIndex])
 
   useEffect(() => {
-    if (complete) return
+    if (complete || introFinished) return
     const interval = setInterval(() => {
       setElapsed((e) => (e < 60 ? e + 1 : e))
     }, 1000)
     return () => clearInterval(interval)
-  }, [guestIndex, complete])
+  }, [guestIndex, complete, introFinished])
 
   const handleSaveAndNext = () => {
-    if (guestIndex + 1 >= SESSION_SIZE) {
+    if (guestIndex + 1 >= guestNames.length) {
       setComplete(true)
     } else {
       setGuestIndex((i) => i + 1)
@@ -77,7 +79,7 @@ export default function MeetingSessionPage() {
           <Menu size={22} className="text-ink" />
         </button>
         <h1 className="text-lg font-bold text-ink">
-          {complete ? 'Session complete' : `Now listening · Guest ${guestIndex + 1}`}
+          {complete ? 'Session complete' : `Now listening · "${currentName}"`}
         </h1>
       </div>
 
@@ -85,20 +87,20 @@ export default function MeetingSessionPage() {
         {complete ? (
           <div className="mt-16 text-center">
             <p className="text-lg font-bold text-ink">
-              You&apos;ve rated everyone in this session.
+              Check your Matches section.
             </p>
             <p className="mt-2 text-sm text-ink-muted">
-              Your matches will show up on Home once results are ready.
+              Others are still rating — results will be out in less than 6
+              hours.
             </p>
-            <a href="/home" className="btn-primary mt-6 inline-flex">
-              Back to Home
-            </a>
+            <Link href="/matches" className="btn-primary mt-6 inline-flex">
+              Go to Matches
+            </Link>
           </div>
         ) : (
           <>
-            {/* TEMPORARY — lets you preview both rating directions before
-                real auth/gender data exists. Remove once a signed-in
-                user's real gender drives this instead. */}
+            {/* TEMPORARY preview toggle — remove once real auth/gender
+                data exists */}
             <div className="mb-6 flex gap-2 rounded-md bg-accent-soft/40 p-2 text-xs">
               <button
                 type="button"
@@ -133,21 +135,20 @@ export default function MeetingSessionPage() {
                 <Logo variant="icon" height={48} bare />
               </span>
 
-              {/* Simulated — no real audio for other members' intros yet,
-                  so this is a visual approximation of "listening in
-                  progress," not actual playback */}
               <div className="mt-6 flex h-12 items-center justify-center gap-1">
                 {wavebarHeights.map((height, i) => (
                   <span
                     key={i}
-                    className="w-1 animate-wave-bar rounded-full bg-accent-primary"
+                    className={`w-1 rounded-full bg-accent-primary ${
+                      introFinished ? '' : 'animate-wave-bar'
+                    }`}
                     style={{ height: `${height}%`, animationDelay: `${i * 0.05}s` }}
                   />
                 ))}
               </div>
 
               <p className="mt-2 text-sm font-medium text-ink-muted">
-                {formatTime(elapsed)} / 1:00
+                {introFinished ? 'Intro finished' : `${formatTime(elapsed)} / 1:00`}
               </p>
             </div>
 
@@ -156,7 +157,7 @@ export default function MeetingSessionPage() {
                 Auto-translated caption
               </p>
               <div className="mt-2">
-                <CyclingCaption text={EXAMPLE_CAPTION} />
+                <CyclingCaption text={EXAMPLE_CAPTION} paused={introFinished} />
               </div>
             </div>
 
