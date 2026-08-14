@@ -25,12 +25,10 @@ export default function Sidebar({ open, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      <div
-        className="flex-1 bg-ink/30 animate-backdrop-fade-in"
-        onClick={onClose}
-      />
-
-      <div className="flex w-72 flex-col bg-white px-5 py-6 shadow-soft animate-modal-pop-in">
+      {/* Panel first in the flex row = renders on the left, where a
+          sidebar belongs. It was previously ordered after the backdrop,
+          which pushed it to the right — that was the bug. */}
+      <div className="flex w-72 flex-col bg-white px-5 py-6 shadow-soft animate-slide-in-left">
         <div className="flex items-center justify-between">
           <span className="font-display text-lg font-bold text-ink">
             gehtta
@@ -40,7 +38,6 @@ export default function Sidebar({ open, onClose }: Props) {
           </button>
         </div>
 
-        {/* Placeholder until real auth/profile data exists */}
         <div className="mt-6 flex items-center gap-3 rounded-lg bg-accent-soft/60 p-3">
           <Logo variant="icon" height={36} />
           <div>
@@ -80,6 +77,13 @@ export default function Sidebar({ open, onClose }: Props) {
           Names stay hidden until you both choose to reveal.
         </p>
       </div>
+
+      {/* Backdrop second = fills the remaining space to the right of the
+          panel, and closes the drawer on click */}
+      <div
+        className="flex-1 bg-ink/30 animate-backdrop-fade-in"
+        onClick={onClose}
+      />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Menu, Clock } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import Sidebar from '@/components/home/Sidebar'
@@ -16,10 +17,9 @@ const guests: Array<'female' | 'male'> = [
 ]
 
 export default function WaitingRoomPage() {
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [canStart, setCanStart] = useState(false)
-  // Example target — a real one would come from the actual event's start
-  // time. Set to 2:14 here to match the design.
   const [targetTime] = useState(() => Date.now() + 2 * 60 * 1000 + 14 * 1000)
 
   return (
@@ -72,11 +72,10 @@ export default function WaitingRoomPage() {
           ))}
         </div>
 
-        {/* Improved copy per your ask — "Start meeting people" instead
-            of a bare "Start" */}
         <button
           type="button"
           disabled={!canStart}
+          onClick={() => router.push('/events/session')}
           className="btn-primary mt-10 w-full disabled:cursor-not-allowed disabled:opacity-40"
         >
           Start meeting people

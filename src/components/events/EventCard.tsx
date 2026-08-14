@@ -11,13 +11,15 @@ type EventCardProps = {
   id: string
   name: string
   subtitle: string
-  /** Overrides the auto-generated "XM · YF left" text — used for cards
-   * that aren't an open seat pool, like Golden Ticket */
   detail?: string
   seatsLeftMale?: number
   seatsLeftFemale?: number
   actionLabel: string
   badgeColor?: 'soft' | 'mid' | 'primary'
+  /** When provided, the action button runs this instead of linking to
+   * /events/{id} — used for "Join" actions that need to decide between
+   * the waiting room and the rating session based on timing. */
+  onAction?: () => void
 }
 
 export default function EventCard({
@@ -29,6 +31,7 @@ export default function EventCard({
   seatsLeftFemale,
   actionLabel,
   badgeColor = 'soft',
+  onAction,
 }: EventCardProps) {
   const seatsText =
     detail ??
@@ -37,7 +40,7 @@ export default function EventCard({
       : null)
 
   const actionClass =
-    actionLabel === 'Join'
+    actionLabel === 'Join' || actionLabel === 'Start'
       ? 'shrink-0 rounded-pill bg-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-glow'
       : 'shrink-0 rounded-pill border border-accent-mid px-4 py-2 text-sm font-semibold text-ink hover:bg-accent-soft'
 
@@ -57,10 +60,15 @@ export default function EventCard({
         )}
       </div>
 
-      {/* Event detail/application pages aren't built yet */}
-      <Link href={`/events/${id}`} className={actionClass}>
-        {actionLabel}
-      </Link>
+      {onAction ? (
+        <button type="button" onClick={onAction} className={actionClass}>
+          {actionLabel}
+        </button>
+      ) : (
+        <Link href={`/events/${id}`} className={actionClass}>
+          {actionLabel}
+        </Link>
+      )}
     </div>
   )
 }

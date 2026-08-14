@@ -2,10 +2,7 @@
 
 import { useState } from 'react'
 
-// Only 4 traits appeared in the design, already shown as selected — this
-// is my own guess at a fuller list in the same spirit, not from the
-// design. Swap in the real list once you have it.
-const TRAIT_OPTIONS = [
+const DEFAULT_TRAITS = [
   'Kind',
   'Curious',
   'Ambitious',
@@ -20,18 +17,38 @@ const TRAIT_OPTIONS = [
   'Driven',
 ]
 
-export default function TraitPicker() {
-  const [selected, setSelected] = useState<string[]>([])
+type Props = {
+  options?: string[]
+  /** Pass both selected + onChange to control this from a parent (used on
+   * the rating page, which needs to read the selection). Omit both to let
+   * the component manage its own state (used on the profile page). */
+  selected?: string[]
+  onChange?: (selected: string[]) => void
+}
+
+export default function TraitPicker({
+  options = DEFAULT_TRAITS,
+  selected: controlledSelected,
+  onChange,
+}: Props) {
+  const [internalSelected, setInternalSelected] = useState<string[]>([])
+  const selected = controlledSelected ?? internalSelected
 
   const toggle = (trait: string) => {
-    setSelected((prev) =>
-      prev.includes(trait) ? prev.filter((t) => t !== trait) : [...prev, trait]
-    )
+    const next = selected.includes(trait)
+      ? selected.filter((t) => t !== trait)
+      : [...selected, trait]
+
+    if (onChange) {
+      onChange(next)
+    } else {
+      setInternalSelected(next)
+    }
   }
 
   return (
     <div className="flex flex-wrap gap-2">
-      {TRAIT_OPTIONS.map((trait) => {
+      {options.map((trait) => {
         const isSelected = selected.includes(trait)
         return (
           <button

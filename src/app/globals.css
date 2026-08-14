@@ -118,13 +118,21 @@
     animation: text-fade-in 0.4s ease-out;
   }
 
-  /* Slow opacity fade loop for the mask icon on the eligibility-check
-     loading screen */
   @keyframes fade-loop {
     0%, 100% { opacity: 0.4; }
     50% { opacity: 1; }
   }
   .animate-fade-loop {
     animation: fade-loop 1.5s ease-in-out infinite;
+  }
+
+  /* Sidebar drawer entrance — slides in from the left, matching where
+     the panel actually sits */
+  @keyframes slide-in-left {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(0); }
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left 0.25s ease-out;
   }
 }
