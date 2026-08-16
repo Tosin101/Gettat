@@ -21,7 +21,7 @@ const wavebarHeights = [
 export default function CallPage() {
   const router = useRouter()
   const [elapsed, setElapsed] = useState(0)
-  const [showIcebreaker, setShowIcebreaker] = useState(false)
+  const [isQuiet, setIsQuiet] = useState(false)
   const [icebreaker] = useState(
     () => ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)]
   )
@@ -37,10 +37,12 @@ export default function CallPage() {
 
   useEffect(() => {
     // SIMULATED — real silence detection needs actual two-way audio and
-    // voice-activity detection through a real call provider (Twilio/
-    // Daily.co per the PRD), which isn't built yet. This fixed 60-second
-    // timer stands in for "a minute of quiet" for demo purposes.
-    const timeout = setTimeout(() => setShowIcebreaker(true), 60000)
+    // voice-activity analysis through a real call provider (Twilio/
+    // Daily.co per the PRD), not built yet. This fixed 60-second timer
+    // stands in for "a minute of quiet" for demo purposes. Once quiet,
+    // it stays that way here rather than trying to simulate talking
+    // resuming, since there's no real audio to detect that from either.
+    const timeout = setTimeout(() => setIsQuiet(true), 60000)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -56,24 +58,39 @@ export default function CallPage() {
         <Logo variant="icon" height={56} bare />
       </span>
 
-      <p className="mt-4 text-lg font-bold text-white">&ldquo;Kwame&rdquo;</p>
+      <p className="mt-4 text-lg font-bold text-white">Kwame</p>
       <p className="mt-1 text-sm text-white/60">
         Voice only · {formatTime(elapsed)}
       </p>
 
-      <div className="mt-8 flex h-12 items-center gap-1">
+      <div
+        className={`mt-8 flex h-12 items-center gap-1 transition-opacity ${
+          isQuiet ? 'opacity-40' : ''
+        }`}
+      >
         {wavebarHeights.map((height, i) => (
           <span
             key={i}
-            className="w-1 animate-wave-bar rounded-full bg-accent-primary"
-            style={{ height: `${height}%`, animationDelay: `${i * 0.05}s` }}
+            className={`w-1 rounded-full bg-accent-primary ${
+              isQuiet ? '' : 'animate-wave-bar'
+            }`}
+            style={{
+              height: isQuiet ? '15%' : `${height}%`,
+              animationDelay: `${i * 0.05}s`,
+            }}
           />
         ))}
       </div>
 
+      {isQuiet && (
+        <p className="mt-3 text-xs text-white/50 animate-text-fade-in">
+          It&apos;s quiet — here&apos;s something to ask
+        </p>
+      )}
+
       <div className="flex-1" />
 
-      {showIcebreaker && (
+      {isQuiet && (
         <div className="mb-8 w-full max-w-xs rounded-lg bg-white/10 p-4 animate-text-fade-in">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
             Icebreaker
@@ -84,8 +101,6 @@ export default function CallPage() {
         </div>
       )}
 
-      {/* No backend to notify the other party or record call outcome yet
-          — hanging up just returns to Matches */}
       <button
         type="button"
         onClick={() => router.push('/matches')}

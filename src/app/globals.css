@@ -126,13 +126,20 @@
     animation: fade-loop 1.5s ease-in-out infinite;
   }
 
-  /* Sidebar drawer entrance — slides in from the left, matching where
-     the panel actually sits */
   @keyframes slide-in-left {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(0); }
   }
   .animate-slide-in-left {
     animation: slide-in-left 0.25s ease-out;
+  }
+
+  /* Filter bottom sheet on the Circle feed */
+  @keyframes slide-up {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(0); }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.25s ease-out;
   }
 }

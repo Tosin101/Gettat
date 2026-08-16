@@ -10,13 +10,44 @@ import TraitPicker from '@/components/onboarding/TraitPicker'
 
 const RATING_TRAITS = ['Warm', 'Funny', 'Thoughtful', 'Confident']
 
-const EXAMPLE_CAPTION =
-  "Hi, I'm someone who laughs easily and listens closely. I grew up between two cities, and I think that's why I love a conversation that goes somewhere unexpected. On weekends you'll probably find me trying a new recipe or getting lost in a bookstore. I'm looking for someone who's curious about the world and doesn't take themselves too seriously."
+type SessionGuest = { name: string; caption: string }
 
-// Real secret names instead of "Guest 1/2/3" — same names used in the
-// hosted-event guest list, for consistency across the mock data
-const FEMALE_GUESTS = ['Ada', 'Zainab', 'Amara']
-const MALE_GUESTS = ['Tomi', 'Kelechi', 'Chidi']
+// Each guest has their own intro now, not a shared one
+const FEMALE_GUESTS: SessionGuest[] = [
+  {
+    name: 'Ada',
+    caption:
+      "Hi, I'm someone who laughs easily and listens closely. I grew up between two cities, and I think that's why I love a conversation that goes somewhere unexpected. On weekends you'll find me trying a new recipe or lost in a bookstore.",
+  },
+  {
+    name: 'Zainab',
+    caption:
+      "I'm the friend who remembers small details and shows up early. I studied architecture, so I notice buildings more than most people would like. I'm looking for someone who's kind first and interesting second.",
+  },
+  {
+    name: 'Amara',
+    caption:
+      "People say I'm the calm one in every group. I've lived in three countries and I still can't pick a favorite. I love long walks, longer conversations, and I'm terrible at small talk on purpose.",
+  },
+]
+
+const MALE_GUESTS: SessionGuest[] = [
+  {
+    name: 'Tomi',
+    caption:
+      "I run a small logistics business and I'm probably the most organized person you'll meet tonight. I play football badly but enthusiastically every Saturday. I want someone who'll laugh at my jokes even when they're not that good.",
+  },
+  {
+    name: 'Kelechi',
+    caption:
+      "I'm an architect who thinks too much about how spaces make people feel. I read more nonfiction than I probably should. Looking for someone who's curious, a little stubborn, and doesn't mind losing an argument gracefully.",
+  },
+  {
+    name: 'Chidi',
+    caption:
+      "I write for a living, so I notice words more than most. I make a very good jollof rice and I will not be taking questions about the recipe. I'm looking for someone who's warm, direct, and easy to talk to.",
+  },
+]
 
 const wavebarHeights = [
   40, 65, 30, 80, 50, 90, 45, 70, 35, 85, 55, 95, 40, 75, 30, 80, 50, 90, 45,
@@ -27,7 +58,7 @@ export default function MeetingSessionPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [viewingAs, setViewingAs] = useState<'male' | 'female'>('female')
   const guestGender = viewingAs === 'male' ? 'female' : 'male'
-  const guestNames = guestGender === 'female' ? FEMALE_GUESTS : MALE_GUESTS
+  const guests = guestGender === 'female' ? FEMALE_GUESTS : MALE_GUESTS
 
   const [guestIndex, setGuestIndex] = useState(0)
   const [elapsed, setElapsed] = useState(0)
@@ -35,7 +66,7 @@ export default function MeetingSessionPage() {
   const [selectedTraits, setSelectedTraits] = useState<string[]>([])
   const [complete, setComplete] = useState(false)
 
-  const currentName = guestNames[guestIndex]
+  const currentGuest = guests[guestIndex]
   const introFinished = elapsed >= 60
 
   useEffect(() => {
@@ -51,7 +82,7 @@ export default function MeetingSessionPage() {
   }, [guestIndex, complete, introFinished])
 
   const handleSaveAndNext = () => {
-    if (guestIndex + 1 >= guestNames.length) {
+    if (guestIndex + 1 >= guests.length) {
       setComplete(true)
     } else {
       setGuestIndex((i) => i + 1)
@@ -79,7 +110,7 @@ export default function MeetingSessionPage() {
           <Menu size={22} className="text-ink" />
         </button>
         <h1 className="text-lg font-bold text-ink">
-          {complete ? 'Session complete' : `Now listening · "${currentName}"`}
+          {complete ? 'Session complete' : `Now listening · ${currentGuest.name}`}
         </h1>
       </div>
 
@@ -90,8 +121,8 @@ export default function MeetingSessionPage() {
               Check your Matches section.
             </p>
             <p className="mt-2 text-sm text-ink-muted">
-              Others are still rating — results will be out in less than 6
-              hours.
+              Others are still rating — results will be out in less than 1
+              hour.
             </p>
             <Link href="/matches" className="btn-primary mt-6 inline-flex">
               Go to Matches
@@ -99,8 +130,6 @@ export default function MeetingSessionPage() {
           </div>
         ) : (
           <>
-            {/* TEMPORARY preview toggle — remove once real auth/gender
-                data exists */}
             <div className="mb-6 flex gap-2 rounded-md bg-accent-soft/40 p-2 text-xs">
               <button
                 type="button"
@@ -157,7 +186,10 @@ export default function MeetingSessionPage() {
                 Auto-translated caption
               </p>
               <div className="mt-2">
-                <CyclingCaption text={EXAMPLE_CAPTION} paused={introFinished} />
+                <CyclingCaption
+                  text={currentGuest.caption}
+                  paused={introFinished}
+                />
               </div>
             </div>
 
