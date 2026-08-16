@@ -1,6 +1,10 @@
-import Link from 'next/link'
-import { MoreHorizontal, MessageCircle, PlayCircle } from 'lucide-react'
+'use client'
+
+import { useState, MouseEvent, KeyboardEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { MessageCircle, PlayCircle } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
+import PostOptionsMenu from '@/components/circle/PostOptionsMenu'
 import {
   type CirclePost,
   totalReactions,
@@ -9,14 +13,39 @@ import {
 
 const TRENDING_THRESHOLD = 100
 
-export default function PostCard({ post }: { post: CirclePost }) {
-  const total = totalReactions(post)
+type Props = {
+  post: CirclePost
+  onHide: () => void
+  onReport: () => void
+}
+
+export default function PostCard({ post, onHide, onReport }: Props) {
+  const router = useRouter()
+  const [liked, setLiked] = useState(false)
+
+  // Not nesting a <button> inside a <Link> this time — that was invalid
+  // HTML and likely what broke navigation. Whole card navigates via a
+  // click handler instead, and the interactive bits inside stop that
+  // click from bubbling up with stopPropagation.
+  const goToPost = () => router.push(`/circle/${post.id}`)
+
+  const handleQuickReact = (e: MouseEvent) => {
+    e.stopPropagation()
+    setLiked((prev) => !prev)
+  }
+
+  const total = totalReactions(post) + (liked ? 1 : 0)
   const isTrending = total > TRENDING_THRESHOLD
 
   return (
-    <Link
-      href={`/circle/${post.id}`}
-      className="block overflow-hidden rounded-lg border border-accent-mid bg-white"
+    <div
+      onClick={goToPost}
+      onKeyDown={(e: KeyboardEvent) => {
+        if (e.key === 'Enter') goToPost()
+      }}
+      role="link"
+      tabIndex={0}
+      className="cursor-pointer overflow-hidden rounded-lg border border-accent-mid bg-white"
     >
       {post.type !== 'text' && (
         <div className="relative flex h-32 items-center justify-center bg-accent-soft">
@@ -62,24 +91,22 @@ export default function PostCard({ post }: { post: CirclePost }) {
               </span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={(e) => e.preventDefault()}
-            aria-label="More options"
-          >
-            <MoreHorizontal size={16} className="text-ink-muted" />
-          </button>
+          <PostOptionsMenu onReport={onReport} onHide={onHide} />
         </div>
 
         <div className="mt-2 flex items-center gap-4 text-xs text-ink-muted">
-          <span>
-            {topReaction(post)} {total}
-          </span>
+          <button
+            type="button"
+            onClick={handleQuickReact}
+            className={`flex items-center gap-1 ${liked ? 'font-semibold text-accent-primary' : ''}`}
+          >
+            {liked ? '❤️' : topReaction(post)} {total}
+          </button>
           <span className="flex items-center gap-1">
             <MessageCircle size={13} /> {post.comments.length}
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
