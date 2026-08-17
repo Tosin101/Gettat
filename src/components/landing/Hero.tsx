@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Sparkles, ArrowDown, Mic, Lock } from 'lucide-react'
+import { Sparkles, ArrowDown, Mic, Lock, ArrowRight } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 
 export default function Hero() {
@@ -28,7 +28,7 @@ export default function Hero() {
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link href="/signup" className="btn-primary">
-              Start your profile <ArrowDown size={16} />
+              Start your profile <ArrowRight size={16} />
             </Link>
             <a href="#how-it-works" className="btn-secondary">
               How Gehtta works

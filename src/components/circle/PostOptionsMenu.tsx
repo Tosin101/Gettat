@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { MoreHorizontal, Flag, EyeOff } from 'lucide-react'
+import { MoreHorizontal, Flag, EyeOff, UserX } from 'lucide-react'
 
 type Props = {
   onReport: () => void
   onHide: () => void
+  onBlock: () => void
 }
 
-export default function PostOptionsMenu({ onReport, onHide }: Props) {
+export default function PostOptionsMenu({ onReport, onHide, onBlock }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -26,7 +27,6 @@ export default function PostOptionsMenu({ onReport, onHide }: Props) {
 
       {open && (
         <>
-          {/* Click-outside catcher */}
           <div
             className="fixed inset-0 z-10"
             onClick={(e) => {
@@ -35,6 +35,17 @@ export default function PostOptionsMenu({ onReport, onHide }: Props) {
             }}
           />
           <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-accent-mid bg-white py-1 shadow-soft">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onHide()
+                setOpen(false)
+              }}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-accent-soft"
+            >
+              <EyeOff size={14} /> Hide post
+            </button>
             <button
               type="button"
               onClick={(e) => {
@@ -50,12 +61,12 @@ export default function PostOptionsMenu({ onReport, onHide }: Props) {
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
-                onHide()
+                onBlock()
                 setOpen(false)
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-accent-soft"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50"
             >
-              <EyeOff size={14} /> Hide this post
+              <UserX size={14} /> Block writer
             </button>
           </div>
         </>

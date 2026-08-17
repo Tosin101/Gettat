@@ -14,10 +14,14 @@ export default function CirclePage() {
   const [filterOpen, setFilterOpen] = useState(false)
   const [category, setCategory] = useState<string | null>(null)
   const [hiddenPostIds, setHiddenPostIds] = useState<string[]>([])
+  const [blockedAuthors, setBlockedAuthors] = useState<string[]>([])
 
   const pinnedPost = circlePosts.find((p) => p.pinned)
   const regularPosts = circlePosts.filter(
-    (p) => !p.pinned && !hiddenPostIds.includes(p.id)
+    (p) =>
+      !p.pinned &&
+      !hiddenPostIds.includes(p.id) &&
+      !blockedAuthors.includes(p.authorSecretName)
   )
   const visiblePosts = category
     ? regularPosts.filter((p) => p.category === category)
@@ -27,9 +31,13 @@ export default function CirclePage() {
     setHiddenPostIds((prev) => [...prev, id])
   }
 
+  const handleBlock = (authorSecretName: string) => {
+    if (confirm(`Block ${authorSecretName}? You won't see their posts anymore.`)) {
+      setBlockedAuthors((prev) => [...prev, authorSecretName])
+    }
+  }
+
   const handleReport = () => {
-    // No backend yet to actually receive reports — confirms the action
-    // was registered rather than silently doing nothing
     alert(
       "Thanks — we'll take a look. (No backend yet to actually route real reports to a moderation queue.)"
     )
@@ -99,6 +107,7 @@ export default function CirclePage() {
                 post={post}
                 onHide={() => handleHide(post.id)}
                 onReport={handleReport}
+                onBlock={() => handleBlock(post.authorSecretName)}
               />
             ))
           )}

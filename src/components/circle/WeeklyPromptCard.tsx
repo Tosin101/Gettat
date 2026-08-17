@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { MessageCircle } from 'lucide-react'
-import { type CirclePost, totalReactions } from '@/data/circle-posts'
+import { type CirclePost, getLikes } from '@/data/circle-posts'
 
 export default function WeeklyPromptCard({ post }: { post: CirclePost }) {
   return (
@@ -14,7 +14,7 @@ export default function WeeklyPromptCard({ post }: { post: CirclePost }) {
       <p className="mt-2 text-base font-bold text-ink">{post.title}</p>
       <p className="mt-1 text-sm text-ink/80">{post.body}</p>
       <div className="mt-3 flex items-center gap-4 text-xs font-medium text-ink/80">
-        <span>❤️ {totalReactions(post)}</span>
+        <span>❤️ {getLikes(post)}</span>
         <span className="flex items-center gap-1">
           <MessageCircle size={13} /> {post.comments.length} replies
         </span>

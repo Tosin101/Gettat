@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ShieldCheck, ArrowDown } from 'lucide-react'
+import { ShieldCheck, ArrowDown, ArrowRight } from 'lucide-react'
 
 export default function PrivacyCTA() {
   return (
@@ -21,7 +21,7 @@ export default function PrivacyCTA() {
         </p>
         <div className="mt-8 flex justify-center">
           <Link href="/signup" className="btn-primary">
-            Begin onboarding <ArrowDown size={16} />
+            Begin onboarding <ArrowRight size={16} />
           </Link>
         </div>
       </div>

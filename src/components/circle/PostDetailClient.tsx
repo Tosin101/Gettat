@@ -3,12 +3,8 @@
 import { useState } from 'react'
 import { MoreHorizontal, PlayCircle } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
-import {
-  type CirclePost,
-  REACTION_OPTIONS,
-} from '@/data/circle-posts'
+import { type CirclePost, REACTION_EMOJIS } from '@/data/circle-posts'
 
-// Stands in for the real signed-in user's secret name until auth exists
 const CURRENT_USER_SECRET_NAME = 'Lila'
 
 export default function PostDetailClient({ post }: { post: CirclePost }) {
@@ -86,16 +82,19 @@ export default function PostDetailClient({ post }: { post: CirclePost }) {
         </button>
       </div>
 
+      {/* Full reaction picker — like/dislike plus the fuller emoji range,
+          for people who want something more specific than a binary
+          approve/disapprove */}
       <div className="mt-3 flex flex-wrap gap-2">
-        {REACTION_OPTIONS.map((emoji) => (
+        {REACTION_EMOJIS.map((emoji) => (
           <button
             key={emoji}
             type="button"
             onClick={() => handleReact(emoji)}
             className={`flex items-center gap-1 rounded-pill border px-3 py-1.5 text-sm ${
               myReaction === emoji
-                ? 'border-accent-primary bg-accent-soft'
-                : 'border-accent-mid'
+                ? 'border-accent-primary bg-accent-soft font-semibold'
+                : 'border-accent-mid text-ink'
             }`}
           >
             {emoji} {reactions[emoji] ?? 0}

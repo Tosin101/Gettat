@@ -2,14 +2,10 @@
 
 import { useState, MouseEvent, KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import { MessageCircle, PlayCircle } from 'lucide-react'
+import { MessageCircle, PlayCircle, ThumbsDown } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import PostOptionsMenu from '@/components/circle/PostOptionsMenu'
-import {
-  type CirclePost,
-  totalReactions,
-  topReaction,
-} from '@/data/circle-posts'
+import { type CirclePost, getLikes, getDislikes } from '@/data/circle-posts'
 
 const TRENDING_THRESHOLD = 100
 
@@ -17,25 +13,31 @@ type Props = {
   post: CirclePost
   onHide: () => void
   onReport: () => void
+  onBlock: () => void
 }
 
-export default function PostCard({ post, onHide, onReport }: Props) {
+export default function PostCard({ post, onHide, onReport, onBlock }: Props) {
   const router = useRouter()
   const [liked, setLiked] = useState(false)
+  const [disliked, setDisliked] = useState(false)
 
-  // Not nesting a <button> inside a <Link> this time — that was invalid
-  // HTML and likely what broke navigation. Whole card navigates via a
-  // click handler instead, and the interactive bits inside stop that
-  // click from bubbling up with stopPropagation.
   const goToPost = () => router.push(`/circle/${post.id}`)
 
-  const handleQuickReact = (e: MouseEvent) => {
+  const handleLike = (e: MouseEvent) => {
     e.stopPropagation()
     setLiked((prev) => !prev)
+    if (disliked) setDisliked(false)
   }
 
-  const total = totalReactions(post) + (liked ? 1 : 0)
-  const isTrending = total > TRENDING_THRESHOLD
+  const handleDislike = (e: MouseEvent) => {
+    e.stopPropagation()
+    setDisliked((prev) => !prev)
+    if (liked) setLiked(false)
+  }
+
+  const likeCount = getLikes(post) + (liked ? 1 : 0)
+  const dislikeCount = getDislikes(post) + (disliked ? 1 : 0)
+  const isTrending = likeCount > TRENDING_THRESHOLD
 
   return (
     <div
@@ -91,16 +93,23 @@ export default function PostCard({ post, onHide, onReport }: Props) {
               </span>
             )}
           </div>
-          <PostOptionsMenu onReport={onReport} onHide={onHide} />
+          <PostOptionsMenu onReport={onReport} onHide={onHide} onBlock={onBlock} />
         </div>
 
         <div className="mt-2 flex items-center gap-4 text-xs text-ink-muted">
           <button
             type="button"
-            onClick={handleQuickReact}
+            onClick={handleLike}
             className={`flex items-center gap-1 ${liked ? 'font-semibold text-accent-primary' : ''}`}
           >
-            {liked ? '❤️' : topReaction(post)} {total}
+            ❤️ {likeCount}
+          </button>
+          <button
+            type="button"
+            onClick={handleDislike}
+            className={`flex items-center gap-1 ${disliked ? 'font-semibold text-red-500' : ''}`}
+          >
+            <ThumbsDown size={13} /> {dislikeCount}
           </button>
           <span className="flex items-center gap-1">
             <MessageCircle size={13} /> {post.comments.length}
